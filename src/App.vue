@@ -1,52 +1,63 @@
 <script setup lang="ts">
-// This starter template is using Vue 3 <script setup> SFCs
-// Check out https://vuejs.org/api/sfc-script-setup.html#script-setup
-import Greet from "./components/Greet.vue";
+import { computed } from 'vue'
+import { useAppStore } from '@/store/modules/app'
+import { ConfigGlobal } from '@/components/ConfigGlobal'
+import { isDark } from '@/utils/is'
+import { useDesign } from '@/hooks/web/useDesign'
+import { useCache } from '@/hooks/web/useCache'
+
+const { getPrefixCls } = useDesign()
+
+const prefixCls = getPrefixCls('app')
+
+const appStore = useAppStore()
+
+const currentSize = computed(() => appStore.getCurrentSize)
+
+const greyMode = computed(() => appStore.getGreyMode)
+
+const { wsCache } = useCache()
+
+// 根据浏览器当前主题设置系统主题色
+const setDefaultTheme = () => {
+  if (wsCache.get('isDark') !== null) {
+    appStore.setIsDark(wsCache.get('isDark'))
+    return
+  }
+  const isDarkTheme = isDark()
+  appStore.setIsDark(isDarkTheme)
+}
+
+setDefaultTheme()
 </script>
 
 <template>
-  <div class="container">
-    <h1>Welcome to Tauri!</h1>
-
-    <div class="row">
-      <a href="https://vitejs.dev" target="_blank">
-        <img src="/vite.svg" class="logo vite" alt="Vite logo" />
-      </a>
-      <a href="https://tauri.app" target="_blank">
-        <img src="/tauri.svg" class="logo tauri" alt="Tauri logo" />
-      </a>
-      <a href="https://vuejs.org/" target="_blank">
-        <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-      </a>
-    </div>
-
-    <p>Click on the Tauri, Vite, and Vue logos to learn more.</p>
-
-    <p>
-      Recommended IDE setup:
-      <a href="https://code.visualstudio.com/" target="_blank">VS Code</a>
-      +
-      <a href="https://github.com/johnsoncodehk/volar" target="_blank">Volar</a>
-      +
-      <a href="https://github.com/tauri-apps/tauri-vscode" target="_blank"
-        >Tauri</a
-      >
-      +
-      <a href="https://github.com/rust-lang/rust-analyzer" target="_blank"
-        >rust-analyzer</a
-      >
-    </p>
-
-    <Greet />
-  </div>
+  <ConfigGlobal :size="currentSize">
+    <RouterView :class="greyMode ? `${prefixCls}-grey-mode` : ''" />
+  </ConfigGlobal>
 </template>
 
-<style scoped>
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+<style lang="less">
+@prefix-cls: ~'@{namespace}-app';
+
+.size {
+  width: 100%;
+  height: 100%;
 }
 
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #249b73);
+html,
+body {
+  padding: 0 !important;
+  margin: 0;
+  overflow: hidden;
+  .size;
+
+  #app {
+    .size;
+  }
+}
+
+.@{prefix-cls}-grey-mode {
+  filter: grayscale(100%);
 }
 </style>
