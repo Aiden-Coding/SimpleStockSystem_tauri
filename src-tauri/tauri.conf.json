@@ -2,7 +2,7 @@
   "build": {
     "beforeDevCommand": "pnpm dev",
     "beforeBuildCommand": "pnpm build",
-    "devPath": "http://localhost:4088",
+    "devPath": "http://localhost:30088",
     "distDir": "../dist",
     "withGlobalTauri": false
   },

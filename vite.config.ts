@@ -118,7 +118,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       }
     },
     server: {
-      port: 4088,
+      port: 30088,
       strictPort: true,
       proxy: {
         // 选项写法
